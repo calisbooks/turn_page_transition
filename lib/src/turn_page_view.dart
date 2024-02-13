@@ -262,6 +262,12 @@ class TurnPageController extends ChangeNotifier {
     }
     _isTurnForward = null;
   }
+
+  Future<void> animateTo(double value, Duration? duration) {
+    _animation.animateTo(value, duration);
+
+    return Future.delayed(duration ?? Duration.zero);
+  }
 }
 
 const _animationMinValue = 0.0;
@@ -390,5 +396,22 @@ class TurnAnimationController {
       _controllers[index].animateTo(0.0);
     }
     currentIndex = index;
+  }
+
+  void animateTo(double value, Duration? duration) {
+    if (isNextPageNone) {
+      return;
+    }
+
+    for (var i = 0; i < itemCount; i++) {
+      if (i == currentIndex) {
+        continue;
+      }
+
+      _controllers[i].stop(canceled: false);
+      _controllers[i].value = i < currentIndex ? 1.0 : 0.0;
+    }
+
+    _controllers[currentIndex].animateTo(value, duration: duration);
   }
 }
